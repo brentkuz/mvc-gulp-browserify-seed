@@ -9,6 +9,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var log = require('gulplog');
 var gutil = require("gulp-util");
 var del = require("del");
+var gulpif = require("gulp-if");
 
 var env = gutil.env.env || 'dev';
 
@@ -37,10 +38,10 @@ gulp.task('javascript', ["clean"], function () {
         tasks.push(b.bundle()
             .pipe(source(file))
             .pipe(buffer())
-            .pipe(sourcemaps.init({ loadMaps: env != "prod" }))
+            .pipe(gulpif(env != "prod", sourcemaps.init({ loadMaps: true })))
             .pipe(uglify())
             .on('error', log.error)
-            .pipe(sourcemaps.write('./'))
+            .pipe(gulpif(env != "prod", sourcemaps.write('./')))
             .pipe(gulp.dest(distDir)));
     }
     return Promise.all(tasks);
